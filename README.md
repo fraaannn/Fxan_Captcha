@@ -1,4 +1,5 @@
 # Fxan_Captcha
 slide captcha research
 
-### passport51 slide captcha
+### passport51
+- type: slide captcha
