@@ -24,7 +24,7 @@ def get_captcha_img():
         f.write(r_img.content)
 
     all_position = get_position(r.text)
-    restore_img(all_position, img_width=13, img_hight=25, line=4)
+    restore_img(all_position, img_chunk_width=13, img_chunk_hight=25)
 
 
 def get_position(html):
@@ -40,21 +40,26 @@ def get_position(html):
     return all_position
 
 
-def restore_img(locations, img_width, img_hight, line):
+def restore_img(locations, img_chunk_width, img_chunk_hight):
     # restore img
     img = Image.open('./img/captcha.png')
-    new_img = Image.new('RGB', (260, 100))
+    img_size = img.size
+    new_img = Image.new('RGB', img_size)
+    line = int(img_size[1] / img_chunk_hight)
+    # number of chunk per line
+    cnl = int(img_size[0] / img_chunk_width)
 
     img_list = []
     for location in locations:
         img_list.append(
-            img.crop((abs(location[0]), abs(location[1]), abs(location[0]) + img_width, abs(location[1]) + img_hight)))
-
+            img.crop((abs(location[0]), abs(location[1]), abs(location[0]) + img_chunk_width,
+                      abs(location[1]) + img_chunk_hight)))
     for i in range(line):
         x_offset = 0
-        for im in img_list[20 * i: 20 * (i + 1)]:
-            new_img.paste(im, (x_offset, 25 * i))
-            x_offset += img_width
+        for im in img_list[cnl * i: cnl * (i + 1)]:
+            new_img.paste(im, (x_offset, img_chunk_hight * i))
+            x_offset += img_chunk_width
+
     new_img.save('./img/new_captcha.png')
 
 
